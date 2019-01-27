@@ -1,11 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace TuplesAndPatterns
 {
     class Program
     {
+        // Use a simple JSON object that cotnains points (x,y) or distance (dX, dY),
+        // Use pattern matching to build the IEnumerable
+        // It's simple to explain and simple to make it work.
+        private const string jsonText =
+        @"{
+        path: [
+          {
+            X: 20,
+            Y: 12
+          },
+          {
+            dx: -23,
+            dy: -5
+          },
+          {
+            x: 5,
+            y: 12
+          },
+          {
+            deltaX: 10,
+            deltaY: 5
+          }
+        ]
+        }";
+
         static void Main(string[] args)
         {
             var points = GeneratePoints(50);
@@ -30,36 +56,17 @@ namespace TuplesAndPatterns
                 Console.WriteLine();
             }
 
-            points = ParsePoints(jsonText);
+            points = GetParsedJSONPoints(jsonText);
+
+            Console.WriteLine("Parsed JSON Output");
+            foreach (var point in points)
+                Console.WriteLine(point);
         }
 
-        // Use a simple JSON object that cotnains points (x,y) or distance (dX, dY),
-        // Use pattern matching to build the IEnumerable
-        // It's simple to explain and simple to make it work.
+        static bool ArePointsInSameQuadrant((double X, double Y) left, (double X, double Y) right) =>
+            (Math.Sign(left.X), Math.Sign(left.Y)) == (Math.Sign(right.X), Math.Sign(right.Y));
 
-        private const string jsonText =
-        @"{
-        path: [
-          {
-            X: 20,
-            Y: 12
-          },
-          {
-            dx: -23,
-            dy: -5
-          },
-          {
-            x: 5,
-            y: 12
-          },
-          {
-            deltaX: 10,
-            deltaY: 5
-          }
-        ]
-        }";
-
-        private static IEnumerable<(double X, double Y)> ParsePoints(string json)
+        static IEnumerable<(double X, double Y)> GetParsedJSONPoints(string json)
         {
             JObject data = JObject.Parse(json);
 
@@ -67,14 +74,9 @@ namespace TuplesAndPatterns
 
             foreach (JObject obj in trip)
             {
-                // TODO: Extend this to use pattern matching to return the next point.
-                Console.WriteLine(obj);
+                yield return ((double)obj.Values().First(), (double)obj.Values().Skip(1).First());
             }
-            return default;
         }
-
-        public static bool ArePointsInSameQuadrant((double X, double Y) left, (double X, double Y) right) =>
-            (Math.Sign(left.X), Math.Sign(left.Y)) == (Math.Sign(right.X), Math.Sign(right.Y));
 
         static IEnumerable<(double X, double Y)> GeneratePoints(int numberOfPointsToGenerate)
         {
