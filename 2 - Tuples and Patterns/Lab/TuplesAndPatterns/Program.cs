@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace TuplesAndPatterns
 {
@@ -8,23 +8,29 @@ namespace TuplesAndPatterns
     {
         static void Main(string[] args)
         {
-            var pts = GetPoints(50);
+            var points = GeneratePoints(50);
 
-            var current = (X: 0.0, Y: 0.0);
+            var currentPoint = (X: 0.0, Y: 0.0);
 
-            foreach (var pt in pts)
+            foreach (var point in points)
             {
-                var xyDistance = (x: pt.X - current.X, y: pt.Y - current.Y);
+                var xyDistance = (x: point.X - currentPoint.X, y: point.Y - currentPoint.Y);
+
                 var distance = Math.Sqrt(xyDistance.x * xyDistance.x + xyDistance.y * xyDistance.y);
-                Console.WriteLine($"The distance from {current} to {pt} is {distance}");
-                if (SameQuadrant(current, pt))
-                    Console.WriteLine("In the same quadrant");
+
+                Console.Write($"The distance from {currentPoint} to {point} is approximately {Math.Round(distance, 2)}");
+
+                if (ArePointsInSameQuadrant(currentPoint, point))
+                    Console.WriteLine(" and they are in the same quadrant.");
                 else
-                    Console.WriteLine("different quadrants");
-                current = pt;
+                    Console.WriteLine(" and they are in different quadrants.");
+
+                currentPoint = point;
+
+                Console.WriteLine();
             }
 
-            pts = parsePoints(jsonText);
+            points = ParsePoints(jsonText);
         }
 
         // Use a simple JSON object that cotnains points (x,y) or distance (dX, dY),
@@ -32,34 +38,34 @@ namespace TuplesAndPatterns
         // It's simple to explain and simple to make it work.
 
         private const string jsonText =
-@"{
-path: [
-  {
-    X: 20,
-    Y: 12
-  },
-  {
-    dx: -23,
-    dy: -5
-  },
-  {
-    x: 5,
-    y: 12
-  },
-  {
-    deltaX: 10,
-    deltaY: 5
-  }
-]
-}";
+        @"{
+        path: [
+          {
+            X: 20,
+            Y: 12
+          },
+          {
+            dx: -23,
+            dy: -5
+          },
+          {
+            x: 5,
+            y: 12
+          },
+          {
+            deltaX: 10,
+            deltaY: 5
+          }
+        ]
+        }";
 
-        private static IEnumerable<(double X, double Y)> parsePoints(string jsonText)
+        private static IEnumerable<(double X, double Y)> ParsePoints(string json)
         {
-            JObject data = JObject.Parse(jsonText);
+            JObject data = JObject.Parse(json);
 
             JArray trip = (JArray)data["path"];
 
-            foreach(JObject obj in trip)
+            foreach (JObject obj in trip)
             {
                 // TODO: Extend this to use pattern matching to return the next point.
                 Console.WriteLine(obj);
@@ -67,22 +73,25 @@ path: [
             return default;
         }
 
-        public static bool SameQuadrant((double X, double Y) left, (double X, double Y) right) =>
+        public static bool ArePointsInSameQuadrant((double X, double Y) left, (double X, double Y) right) =>
             (Math.Sign(left.X), Math.Sign(left.Y)) == (Math.Sign(right.X), Math.Sign(right.Y));
 
-        static IEnumerable<(double X, double Y)> GetPoints(int numberPoints)
+        static IEnumerable<(double X, double Y)> GeneratePoints(int numberOfPointsToGenerate)
         {
             var generator = new ConnectedSensor();
 
-            var enumerator = generator.ReadData(numberPoints * 2).GetEnumerator();
-            while (enumerator.MoveNext())
+            var pointsEnumerator = generator.ReadData(numberOfPointsToGenerate * 2).GetEnumerator();
+
+            while (pointsEnumerator.MoveNext())
             {
-               var X = enumerator.Current;
-               enumerator.MoveNext();
-               var Y = enumerator.Current;
-               yield return (X, Y);
+                var x = pointsEnumerator.Current;
+
+                pointsEnumerator.MoveNext();
+
+                var y = pointsEnumerator.Current;
+
+                yield return (x, y);
             }
         }
-
     }
 }

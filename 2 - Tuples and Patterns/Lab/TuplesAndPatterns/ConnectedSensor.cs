@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace TuplesAndPatterns
@@ -9,9 +8,10 @@ namespace TuplesAndPatterns
     {
         public IEnumerable<double> ReadData(int numberDataPoints)
         {
-            Random r = new Random();
-            foreach(var _ in Enumerable.Range(0,numberDataPoints))
-                yield return (r.NextDouble() - 0.5) * 100; // from -50 to 50
+            Random r = new Random((int)DateTime.Now.Ticks);
+
+            foreach (var _ in Enumerable.Range(0, numberDataPoints))
+                yield return Math.Round((r.NextDouble() - 0.5) * 100, 2); // from -50 to 50
         }
     }
 }
