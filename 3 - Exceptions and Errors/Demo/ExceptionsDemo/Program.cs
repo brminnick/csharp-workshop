@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ExceptionsDemo
 {
@@ -15,27 +14,38 @@ namespace ExceptionsDemo
             Console.WriteLine(theBank);
             Console.WriteLine($"Expected till value: {expectedTotal}");
 
-            int transactions = 50;
-            var ValueGenerator = new Random();
+            int transactions = 15;
+            var valueGenerator = new Random((int)DateTime.Now.Ticks);
 
             while (transactions-- > 0)
             {
-                int cost = ValueGenerator.Next(2, 50);
-                int numOnes = cost % 2;
-                int numFives = (cost % 10 > 7) ? 1 : 0;
-                int numTens = (cost % 20 > 13) ? 1 : 0;
-                int numTwenties = (cost < 20) ? 1 : 2;
+                int itemCost = valueGenerator.Next(2, 50);
+
+                int numOnes = itemCost % 2;
+                int numFives = (itemCost % 10 > 7) ? 1 : 0;
+                int numTens = (itemCost % 20 > 13) ? 1 : 0;
+                int numTwenties = (itemCost < 20) ? 1 : 2;
+
                 try
                 {
-                    Console.WriteLine($"Buying {cost} with {numTwenties} twenty dollar bills");
-                    theBank.MakeChange(cost, numTwenties, numTens, numFives, numOnes);
-                    expectedTotal += cost;
-                } catch (InvalidOperationException e)
+                    Console.WriteLine($"Customer making a £{itemCost} purchase");
+                    Console.WriteLine($"\t Using {numTwenties} twenties");
+                    Console.WriteLine($"\t Using {numTens} tenners");
+                    Console.WriteLine($"\t Using {numFives} fivers");
+                    Console.WriteLine($"\t Using {numOnes} one-pound coins");
+
+                    theBank.MakeChange(itemCost, numTwenties, numTens, numFives, numOnes);
+
+                    expectedTotal += itemCost;
+                }
+                catch (InvalidOperationException e)
                 {
                     Console.WriteLine($"Could not make transaction: {e.Message}");
                 }
+
                 Console.WriteLine(theBank);
                 Console.WriteLine($"Expected till value: {expectedTotal}");
+                Console.WriteLine();
             }
         }
     }
@@ -59,35 +69,43 @@ namespace ExceptionsDemo
             TenDollarBills += tens;
             FiveDollarBills += fives;
             OneDollarBills += ones;
+
             int amountPaid = twenties * 20 + tens * 10 + fives * 5 + ones;
             int changeNeeded = amountPaid - cost;
+
             if (changeNeeded < 0)
-                throw new InvalidOperationException("You must pay at lest the cost");
+                throw new InvalidOperationException("Not enough money provided");
+
+            Console.WriteLine("Cashier Returns:");
 
             while ((changeNeeded > 19) && (TwentyDollarBills > 0))
             {
                 TwentyDollarBills--;
                 changeNeeded -= 20;
-                Console.WriteLine("\tHere's a twenty");
+                Console.WriteLine("\t A twenty");
             }
+
             while ((changeNeeded > 9) && (TenDollarBills > 0))
             {
                 TenDollarBills--;
                 changeNeeded -= 10;
-                Console.WriteLine("\tHere's a ten");
+                Console.WriteLine("\t A tenner");
             }
+
             while ((changeNeeded > 4) && (FiveDollarBills > 0))
             {
                 FiveDollarBills--;
                 changeNeeded -= 5;
-                Console.WriteLine("\tHere's a five");
+                Console.WriteLine("\t A fiver");
             }
+
             while ((changeNeeded > 0) && (OneDollarBills > 0))
             {
                 OneDollarBills--;
                 changeNeeded--;
-                Console.WriteLine("\tHere's a one");
+                Console.WriteLine("\t A one");
             }
+
             if (changeNeeded > 0)
                 throw new InvalidOperationException("Can't make change. Do you have anything smaller?");
         }
@@ -99,6 +117,7 @@ namespace ExceptionsDemo
             Console.WriteLine($"{TenDollarBills * 10} in tens");
             Console.WriteLine($"{FiveDollarBills * 5} in fives");
             Console.WriteLine($"{OneDollarBills} in ones");
+            Console.WriteLine();
         }
 
         public override string ToString() =>
