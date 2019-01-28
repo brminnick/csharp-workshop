@@ -8,7 +8,7 @@ It looks simple.  Now, without looking at the implementation of the till class, 
 
 Run the simulation with a small set of data, like you would in a unit test. It looks great. Now, change the number of iterations and try again. Point out the runtime problem: State has been mutated when there have been error conditions. If you run this over a longer period of time, it will always fail eventually.
 
-Why did this happen? WEll, the code mutated state before it encountered an error condition.
+Why did this happen? Well, the code mutated state before it encountered an error condition.
 
 Key point: This is a small simulation that demonstrates a common problem in large code bases: Unless unit tests are carefully constructed, exceptions may not always occur in your test environments. It's only under production stress that these appear. Then, data errors happen with live customer data. It gets very expensive and becomes a data recovery issue.
 
