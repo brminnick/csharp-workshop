@@ -15,6 +15,26 @@ the nuances of different design choices.
 
 The code for the lab is here: https://github.com/dotnet/samples/tree/master/csharp/safe-efficient-code/benchmark
 
+To create a self contained executable:
+
+```console
+dotnet publish -c Release --self-contained -r win10-x64
+```
+
+for 64 bit, or 
+
+```console
+dotnet publish -c Release --self-contained -r win10-x86
+```
+
+for 32 bit.
+
+To run the benchmark you need to run from the command line in the project directory. Tab completion make this easier, but the command line is:
+
+```console
+./bin/Release/netcoreapp2.1/win10-x64/benchmark.exe
+```
+
 In this lab, explore the following:
 
 . pass by 'ref'
