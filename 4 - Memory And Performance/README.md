@@ -27,3 +27,7 @@ have different characteristics.
 Another question to explore if changing between 64 bit
 and 32 bit and independent makes a difference. How about
 .NET Framework and .NET Core?
+
+Consider making a ref struct.
+
+Consider adding interface implementation to the benchmark. How does that change the performance on structs, readonly structs, and ref struct (trick question, ref structs can't add interface implementation)
