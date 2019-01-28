@@ -6,7 +6,7 @@ namespace TuplesAndPatterns
 {
     class Program
     {
-        // Use a simple JSON object that cotnains points (x,y) or distance (dX, dY),
+        // Use a simple JSON object that contains points (x,y) or distance (dX, dY),
         // Use pattern matching to build the IEnumerable
         // It's simple to explain and simple to make it work.
 
