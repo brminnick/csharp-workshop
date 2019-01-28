@@ -11,18 +11,18 @@ Over the past few releases, C# has added features that greatly improve productiv
 In this workshop, you’ll learn scenarios where these new features make you more productive, and improve the clarity of your code. You’ll get a guided tour through the async and await wilderness. You'll start with basic uses where async and await work like magic. From there, you'll learn common practices and how async tasks compose. You'll dive into enough of the implementation details to understand how to apply async practices. After working through these different practices, you'll emerge from the wilderness understanding how to write clear, correct and safe async code. From there, you'll work through everyday scenarios where modern C# frees itself from the shackles of history. You'll see new ways to work with text, new expressions for control flow, and new ways to bend the type system to your will.
 You’ll learn:
 
-- Getting started with the basics of async and await
-- Distinguish asynchronous programming and parallel programming
-- Compose asynchronous method calls throughout your code
-- Understand the pitfalls of async void
-- Designing async APIs
-- Advanced async and Task based programming
-- How string interpolation makes formatting strings much easier and clearer.
-- How to create compound assignments and comparisons using Tuples and Deconstruction
-- How to simplify iterators and async error handling using local functions
-- How to simplify error reporting using throw expressions in expression bodied members.
-- Write more performant code using value types safe pass-by-reference
-- How to use Pattern Matching to create algorithms that extend existing types
+- [x] Getting started with the basics of async and await
+- [x] Distinguish asynchronous programming and parallel programming
+- [x] Compose asynchronous method calls throughout your code
+- [x] Understand the pitfalls of async void
+- [x] Designing async APIs
+- [x] Advanced async and Task based programming
+- [x] How string interpolation makes formatting strings much easier and clearer.
+- [x] How to create compound assignments and comparisons using Tuples and Deconstruction
+- [x] How to simplify iterators and async error handling using local functions
+- [x] How to simplify error reporting using throw expressions in expression bodied members.
+- [x] Write more performant code using value types safe pass-by-reference
+- [x] How to use Pattern Matching to create algorithms that extend existing types
 
 ## Computer Setup: 
 
