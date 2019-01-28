@@ -25,7 +25,6 @@ namespace GitHubActivityReport
         nodes {
           title
           number
-          bodyText
           createdAt
         }
       }
@@ -35,14 +34,11 @@ namespace GitHubActivityReport
         internal const string PullRequestQuery =
 @"query($repo_name:String!) {
   repository(owner: ""dotnet"", name: $repo_name) {
-    pullRequests(last: 50)
-      {
-        nodes {
-          title
-          number
-          bodyText
-          createdAt
-        }
+    pullRequests(last: 50) {
+      nodes {
+        title
+        number
+        createdAt
       }
     }
   }
