@@ -10,8 +10,8 @@ namespace GitHubActivityReport
 {
     public class GraphQLRequest
     {
-        public string query { get; set; }
-        public IDictionary<string, object> variables { get; } = new Dictionary<string, object>();
+        public string Query { get; set; }
+        public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
@@ -132,9 +132,9 @@ namespace GitHubActivityReport
         {
             var issueAndPRQuery = new GraphQLRequest
             {
-                query = queryText
+                Query = queryText
             };
-            issueAndPRQuery.variables["repo_name"] = repoName;
+            issueAndPRQuery.Variables["repo_name"] = repoName;
 
             var postBody = issueAndPRQuery.ToJsonText();
             var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),

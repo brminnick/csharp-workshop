@@ -8,8 +8,8 @@ namespace GitHubActivityReport
 {
     public class GraphQLRequest
     {
-        public string query { get; set; }
-        public IDictionary<string, object> variables { get; } = new Dictionary<string, object>();
+        public string Query { get; set; }
+        public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
@@ -61,9 +61,9 @@ namespace GitHubActivityReport
             // Next: Run the issue query.
             var issueAndPRQuery = new GraphQLRequest
             {
-                query = Queries.IssueQuery
+                Query = Queries.IssueQuery
             };
-            issueAndPRQuery.variables["repo_name"] = "docs";
+            issueAndPRQuery.Variables["repo_name"] = "docs";
 
             var postBody = issueAndPRQuery.ToJsonText();
             var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
@@ -73,8 +73,8 @@ namespace GitHubActivityReport
             Console.WriteLine(results);
 
             // Find PRs:
-            issueAndPRQuery.query = Queries.PullRequestQuery;
-            issueAndPRQuery.variables["repo_name"] = "docs";
+            issueAndPRQuery.Query = Queries.PullRequestQuery;
+            issueAndPRQuery.Variables["repo_name"] = "docs";
 
             postBody = issueAndPRQuery.ToJsonText();
             response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
