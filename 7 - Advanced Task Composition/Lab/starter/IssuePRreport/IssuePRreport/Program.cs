@@ -69,14 +69,6 @@ namespace GitHubActivityReport
 
     class Program
     {
-        private class progressStatus : IProgress<int>
-        {
-            Action<int> action;
-            public progressStatus(Action<int> progressAction) => 
-                action = progressAction;
-
-            public void Report(int value) => action(value);
-        }
         static async Task Main(string[] args)
         {
             var key = GetEnvVariable("GitHubKey",
@@ -95,18 +87,9 @@ namespace GitHubActivityReport
 
             //await PrintInOrderFinished(client);
 
-            CancellationTokenSource cancellationSource = new CancellationTokenSource();
-            var progressReporter = new progressStatus((num) =>
-            {
-                Console.WriteLine($"Received {num} issues in total");
-                if (num > 100)
-                    cancellationSource.Cancel();
-            });
-
             try
             {
-                var results = await runPagedQuery(client, Queries.PagedIssueQuery, "docs",
-                    cancellationSource.Token, progressReporter);
+                var results = await runPagedQuery(client, Queries.PagedIssueQuery, "docs");
                 Console.WriteLine(results);
             }
             catch (OperationCanceledException)
@@ -216,40 +199,6 @@ namespace GitHubActivityReport
                 issueAndPRQuery.variables["start_cursor"] = results["data"]["repository"]["issues"]["pageInfo"]["startCursor"].ToString();
 
                 finalResults.Merge(results["data"]["repository"]["issues"]["nodes"]);
-            }
-            return finalResults;
-        }
-
-        private static async Task<JArray> runPagedQuery(GitHubClient client, string queryText, string repoName, CancellationToken cancel, IProgress<int> progress)
-        {
-            var issueAndPRQuery = new GraphQLRequest
-            {
-                query = queryText
-            };
-            issueAndPRQuery.variables["repo_name"] = repoName;
-
-            JArray finalResults = new JArray();
-            bool hasMorePages = true;
-            int pagesReturned = 0;
-            int issuesReturned = 0;
-
-            // Stop with 10 pages, because these are big repos:
-            while (hasMorePages && (pagesReturned++ < 10))
-            {
-                var postBody = issueAndPRQuery.ToJsonText();
-                var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
-                    postBody, "application/json", "application/json");
-
-                JObject results = JObject.Parse(response.HttpResponse.Body.ToString());
-
-                int totalCount = (int)results["data"]["repository"]["issues"]["totalCount"];
-                hasMorePages = (bool)results["data"]["repository"]["issues"]["pageInfo"]["hasPreviousPage"];
-                issueAndPRQuery.variables["start_cursor"] = results["data"]["repository"]["issues"]["pageInfo"]["startCursor"].ToString();
-
-                finalResults.Merge(results["data"]["repository"]["issues"]["nodes"]);
-                issuesReturned += results["data"]["repository"]["issues"]["nodes"].Count();
-                progress?.Report(issuesReturned);
-                cancel.ThrowIfCancellationRequested();
             }
             return finalResults;
         }

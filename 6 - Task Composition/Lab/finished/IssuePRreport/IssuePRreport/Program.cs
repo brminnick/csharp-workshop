@@ -61,9 +61,9 @@ namespace GitHubActivityReport
             };
 
             // Next: Run the issue query.
-            //await SimpleRunQuery(client);
+            await SimpleRunQuery(client);
 
-            // await IssuesThenPRsQuery(client);
+            await IssuesThenPRsQuery(client);
 
             await PrintInOrderFinished(client);
         }
@@ -128,20 +128,32 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static async Task<JObject> runQuery(GitHubClient client, string queryText, string repoName)
+        private static Task<JObject> runQuery(GitHubClient client, string queryText, string repoName)
         {
-            var issueAndPRQuery = new GraphQLRequest
+            if (client == null)
+                throw new ArgumentNullException(paramName: nameof(client), "bad null client");
+            if (string.IsNullOrWhiteSpace(queryText))
+                throw new ArgumentNullException();
+            if (string.IsNullOrWhiteSpace(repoName))
+                throw new ArgumentNullException();
+
+            return runQueryImpl();
+
+            async Task<JObject> runQueryImpl()
             {
-                query = queryText
-            };
-            issueAndPRQuery.variables["repo_name"] = repoName;
+                var issueAndPRQuery = new GraphQLRequest
+                {
+                    query = queryText
+                };
+                issueAndPRQuery.variables["repo_name"] = repoName;
 
-            var postBody = issueAndPRQuery.ToJsonText();
-            var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
-                postBody, "application/json", "application/json");
+                var postBody = issueAndPRQuery.ToJsonText();
+                var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
+                    postBody, "application/json", "application/json");
 
-            JObject results = JObject.Parse(response.HttpResponse.Body.ToString());
-            return results;
+                JObject results = JObject.Parse(response.HttpResponse.Body.ToString());
+                return results;
+            }
         }
 
         private static string GetEnvVariable(string item, string error, string defaultValue)
