@@ -17,7 +17,7 @@ namespace GitHubActivityReport
             JsonConvert.SerializeObject(this);
     }
 
-    class Queries
+    static class Queries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
@@ -68,7 +68,7 @@ namespace GitHubActivityReport
             await PrintInOrderFinished(client);
         }
 
-        private static async Task SimpleRunQuery(GitHubClient client)
+        static async Task SimpleRunQuery(GitHubClient client)
         {
             JObject results = await RunQuery(client, Queries.IssueQuery, "docs");
             Console.WriteLine(results);
@@ -87,7 +87,7 @@ namespace GitHubActivityReport
             Console.WriteLine(results);
         }
 
-        private static async Task IssuesThenPRsQuery(GitHubClient client)
+        static async Task IssuesThenPRsQuery(GitHubClient client)
         {
             var docsIssueTask =  RunQuery(client, Queries.IssueQuery, "docs");
 
@@ -107,7 +107,7 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static async Task PrintInOrderFinished(GitHubClient client)
+        static async Task PrintInOrderFinished(GitHubClient client)
         {
             List<Task<JObject>> queryTasks = new List<Task<JObject>>
             {
@@ -128,7 +128,7 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static async Task<JObject> RunQuery(GitHubClient client, string queryText, string repoName)
+        static async Task<JObject> RunQuery(GitHubClient client, string queryText, string repoName)
         {
             var issueAndPRQuery = new GraphQLRequest
             {
@@ -144,7 +144,7 @@ namespace GitHubActivityReport
             return results;
         }
 
-        private static string GetEnvVariable(string item, string error, string defaultValue)
+        static string GetEnvVariable(string item, string error, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(item);
             if (string.IsNullOrWhiteSpace(value))
