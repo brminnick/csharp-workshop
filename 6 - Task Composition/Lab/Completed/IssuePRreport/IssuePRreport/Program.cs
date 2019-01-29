@@ -70,33 +70,33 @@ namespace GitHubActivityReport
 
         private static async Task SimpleRunQuery(GitHubClient client)
         {
-            JObject results = await runQuery(client, Queries.IssueQuery, "docs");
+            JObject results = await RunQuery(client, Queries.IssueQuery, "docs");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            results = await RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
             // Find PRs:
-            results = await runQuery(client, Queries.PullRequestQuery, "samples");
+            results = await RunQuery(client, Queries.PullRequestQuery, "samples");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
+            results = await RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.PullRequestQuery, "docs");
+            results = await RunQuery(client, Queries.PullRequestQuery, "docs");
             Console.WriteLine(results);
         }
 
         private static async Task IssuesThenPRsQuery(GitHubClient client)
         {
-            var docsIssueTask =  runQuery(client, Queries.IssueQuery, "docs");
+            var docsIssueTask =  RunQuery(client, Queries.IssueQuery, "docs");
 
-            var apidocsIssueTask = runQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            var apidocsIssueTask = RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
 
             // Find PRs:
-            var samplesPRTask = runQuery(client, Queries.PullRequestQuery, "samples");
-            var apiDocsPRTask = runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
-            var docsPRTask = runQuery(client, Queries.PullRequestQuery, "docs");
+            var samplesPRTask = RunQuery(client, Queries.PullRequestQuery, "samples");
+            var apiDocsPRTask = RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
+            var docsPRTask = RunQuery(client, Queries.PullRequestQuery, "docs");
 
             writeData(await docsIssueTask);
             writeData(await apidocsIssueTask);
@@ -111,11 +111,11 @@ namespace GitHubActivityReport
         {
             List<Task<JObject>> queryTasks = new List<Task<JObject>>
             {
-                runQuery(client, Queries.IssueQuery, "docs"),
-                runQuery(client, Queries.IssueQuery, "dotnet-api-docs"),
-                runQuery(client, Queries.PullRequestQuery, "samples"),
-                runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs"),
-                runQuery(client, Queries.PullRequestQuery, "docs")
+                RunQuery(client, Queries.IssueQuery, "docs"),
+                RunQuery(client, Queries.IssueQuery, "dotnet-api-docs"),
+                RunQuery(client, Queries.PullRequestQuery, "samples"),
+                RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs"),
+                RunQuery(client, Queries.PullRequestQuery, "docs")
             };
 
             while (queryTasks.Any())
@@ -128,7 +128,7 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static async Task<JObject> runQuery(GitHubClient client, string queryText, string repoName)
+        private static async Task<JObject> RunQuery(GitHubClient client, string queryText, string repoName)
         {
             var issueAndPRQuery = new GraphQLRequest
             {
