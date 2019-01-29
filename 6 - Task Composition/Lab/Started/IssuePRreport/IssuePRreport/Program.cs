@@ -94,6 +94,8 @@ namespace GitHubActivityReport
             // 1. Find the latest 50 Open issues in the dotnet/docs repo.
             // 2. Find the latest 50 in dotnet-api-docs
             // 3. Do the same for PRs in: dotnet/docs, dotnet/dotnet-api-docs, dotnet/samples
+
+            Console.ReadLine();
         }
 
         static string GetEnvVariable(string item, string error, string defaultValue)

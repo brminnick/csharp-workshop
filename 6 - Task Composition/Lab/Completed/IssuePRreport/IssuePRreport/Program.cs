@@ -55,6 +55,9 @@ namespace GitHubActivityReport
         static async Task Main(string[] args)
         {
             //Follow these steps to create a GitHub Access Token https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token
+            //Select the following permissions for your GitHub Access Token:
+            // - repo:status
+            // - public_repo
             var key = GetEnvVariable("GitHubKey",
             "You must store you GitHub key in the 'GitHubKey' environment variable",
             "");
@@ -70,6 +73,8 @@ namespace GitHubActivityReport
             // await IssuesThenPRsQuery(client);
 
             await PrintInOrderFinished(client);
+
+            Console.ReadLine();
         }
 
         static async Task SimpleRunQuery(GitHubClient client)
