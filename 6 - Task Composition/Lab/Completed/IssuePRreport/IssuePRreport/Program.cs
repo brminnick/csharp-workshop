@@ -8,16 +8,19 @@ using System.Threading.Tasks;
 
 namespace GitHubActivityReport
 {
-    public class GraphQLRequest
+    class GraphQLRequest
     {
-        public string query { get; set; }
-        public IDictionary<string, object> variables { get; } = new Dictionary<string, object>();
+        [JsonProperty("query")]
+        public string Query { get; set; }
+
+        [JsonProperty("variables")]
+        public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
     }
 
-    class Queries
+    static class Queries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
@@ -51,6 +54,10 @@ namespace GitHubActivityReport
     {
         static async Task Main(string[] args)
         {
+            //Follow these steps to create a GitHub Access Token https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token
+            //Select the following permissions for your GitHub Access Token:
+            // - repo:status
+            // - public_repo
             var key = GetEnvVariable("GitHubKey",
             "You must store you GitHub key in the 'GitHubKey' environment variable",
             "");
@@ -66,37 +73,39 @@ namespace GitHubActivityReport
             await IssuesThenPRsQuery(client);
 
             await PrintInOrderFinished(client);
+
+            Console.ReadLine();
         }
 
-        private static async Task SimpleRunQuery(GitHubClient client)
+        static async Task SimpleRunQuery(GitHubClient client)
         {
-            JObject results = await runQuery(client, Queries.IssueQuery, "docs");
+            JObject results = await RunQuery(client, Queries.IssueQuery, "docs");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            results = await RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
             // Find PRs:
-            results = await runQuery(client, Queries.PullRequestQuery, "samples");
+            results = await RunQuery(client, Queries.PullRequestQuery, "samples");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
+            results = await RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
-            results = await runQuery(client, Queries.PullRequestQuery, "docs");
+            results = await RunQuery(client, Queries.PullRequestQuery, "docs");
             Console.WriteLine(results);
         }
 
-        private static async Task IssuesThenPRsQuery(GitHubClient client)
+        static async Task IssuesThenPRsQuery(GitHubClient client)
         {
-            var docsIssueTask =  runQuery(client, Queries.IssueQuery, "docs");
+            var docsIssueTask =  RunQuery(client, Queries.IssueQuery, "docs");
 
-            var apidocsIssueTask = runQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            var apidocsIssueTask = RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
 
             // Find PRs:
-            var samplesPRTask = runQuery(client, Queries.PullRequestQuery, "samples");
-            var apiDocsPRTask = runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
-            var docsPRTask = runQuery(client, Queries.PullRequestQuery, "docs");
+            var samplesPRTask = RunQuery(client, Queries.PullRequestQuery, "samples");
+            var apiDocsPRTask = RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
+            var docsPRTask = RunQuery(client, Queries.PullRequestQuery, "docs");
 
             writeData(await docsIssueTask);
             writeData(await apidocsIssueTask);
@@ -107,15 +116,15 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static async Task PrintInOrderFinished(GitHubClient client)
+        static async Task PrintInOrderFinished(GitHubClient client)
         {
             List<Task<JObject>> queryTasks = new List<Task<JObject>>
             {
-                runQuery(client, Queries.IssueQuery, "docs"),
-                runQuery(client, Queries.IssueQuery, "dotnet-api-docs"),
-                runQuery(client, Queries.PullRequestQuery, "samples"),
-                runQuery(client, Queries.PullRequestQuery, "dotnet-api-docs"),
-                runQuery(client, Queries.PullRequestQuery, "docs")
+                RunQuery(client, Queries.IssueQuery, "docs"),
+                RunQuery(client, Queries.IssueQuery, "dotnet-api-docs"),
+                RunQuery(client, Queries.PullRequestQuery, "samples"),
+                RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs"),
+                RunQuery(client, Queries.PullRequestQuery, "docs")
             };
 
             while (queryTasks.Any())
@@ -128,7 +137,7 @@ namespace GitHubActivityReport
             void writeData(JObject data) => Console.WriteLine(data);
         }
 
-        private static Task<JObject> runQuery(GitHubClient client, string queryText, string repoName)
+        static async Task<JObject> RunQuery(GitHubClient client, string queryText, string repoName)
         {
             if (client == null)
                 throw new ArgumentNullException(paramName: nameof(client), "bad null client");
@@ -141,11 +150,9 @@ namespace GitHubActivityReport
 
             async Task<JObject> runQueryImpl()
             {
-                var issueAndPRQuery = new GraphQLRequest
-                {
-                    query = queryText
-                };
-                issueAndPRQuery.variables["repo_name"] = repoName;
+                Query = queryText
+            };
+            issueAndPRQuery.Variables["repo_name"] = repoName;
 
                 var postBody = issueAndPRQuery.ToJsonText();
                 var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
@@ -156,7 +163,7 @@ namespace GitHubActivityReport
             }
         }
 
-        private static string GetEnvVariable(string item, string error, string defaultValue)
+        static string GetEnvVariable(string item, string error, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(item);
             if (string.IsNullOrWhiteSpace(value))

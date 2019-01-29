@@ -1,21 +1,24 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GitHubActivityReport
 {
-    public class GraphQLRequest
+    class GraphQLRequest
     {
-        public string query { get; set; }
-        public IDictionary<string, object> variables { get; } = new Dictionary<string, object>();
+        [JsonProperty("query")]
+        public string Query { get; set; }
+
+        [JsonProperty("variables")]
+        public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
     }
 
-    class Queries
+    static class Queries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
@@ -49,6 +52,10 @@ namespace GitHubActivityReport
     {
         static async Task Main(string[] args)
         {
+            //Follow these steps to create a GitHub Access Token https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token
+            //Select the following permissions for your GitHub Access Token:
+            // - repo:status
+            // - public_repo
             var key = GetEnvVariable("GitHubKey",
             "You must store you GitHub key in the 'GitHubKey' environment variable",
             "");
@@ -61,9 +68,9 @@ namespace GitHubActivityReport
             // Next: Run the issue query.
             var issueAndPRQuery = new GraphQLRequest
             {
-                query = Queries.IssueQuery
+                Query = Queries.IssueQuery
             };
-            issueAndPRQuery.variables["repo_name"] = "docs";
+            issueAndPRQuery.Variables["repo_name"] = "docs";
 
             var postBody = issueAndPRQuery.ToJsonText();
             var response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
@@ -73,8 +80,8 @@ namespace GitHubActivityReport
             Console.WriteLine(results);
 
             // Find PRs:
-            issueAndPRQuery.query = Queries.PullRequestQuery;
-            issueAndPRQuery.variables["repo_name"] = "docs";
+            issueAndPRQuery.Query = Queries.PullRequestQuery;
+            issueAndPRQuery.Variables["repo_name"] = "docs";
 
             postBody = issueAndPRQuery.ToJsonText();
             response = await client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
@@ -87,10 +94,12 @@ namespace GitHubActivityReport
             // 1. Find the latest 50 Open issues in the dotnet/docs repo.
             // 2. Find the latest 50 in dotnet-api-docs
             // 3. Do the same for PRs in: dotnet/docs, dotnet/dotnet-api-docs, dotnet/samples
+
+            Console.ReadLine();
         }
 
-        private static string GetEnvVariable(string item, string error, string defaultValue)
-        {
+        static string GetEnvVariable(string item, string error, string defaultValue)
+        {            
             var value = Environment.GetEnvironmentVariable(item);
             if (string.IsNullOrWhiteSpace(value))
             {
