@@ -9,7 +9,7 @@ using Octokit;
 
 namespace GitHubActivityReport
 {
-    public class GraphQLRequest
+    class GraphQLRequest
     {
         public string Query { get; set; }
         public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
@@ -18,7 +18,7 @@ namespace GitHubActivityReport
             JsonConvert.SerializeObject(this);
     }
 
-    class Queries
+    class GraphQLQueries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
@@ -97,7 +97,7 @@ namespace GitHubActivityReport
 
             try
             {
-                var results = await RunPagedQuery(client, Queries.PagedIssueQuery, "docs",
+                var results = await RunPagedQuery(client, GraphQLQueries.PagedIssueQuery, "docs",
                     cancellationSource.Token, progressReporter);
                 Console.WriteLine(results);
             }
@@ -109,33 +109,33 @@ namespace GitHubActivityReport
 
         static async Task SimpleRunQuery(GitHubClient client)
         {
-            JObject results = await RunQuery(client, Queries.IssueQuery, "docs");
+            JObject results = await RunQuery(client, GraphQLQueries.IssueQuery, "docs");
             Console.WriteLine(results);
 
-            results = await RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            results = await RunQuery(client, GraphQLQueries.IssueQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
             // Find PRs:
-            results = await RunQuery(client, Queries.PullRequestQuery, "samples");
+            results = await RunQuery(client, GraphQLQueries.PullRequestQuery, "samples");
             Console.WriteLine(results);
 
-            results = await RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
+            results = await RunQuery(client, GraphQLQueries.PullRequestQuery, "dotnet-api-docs");
             Console.WriteLine(results);
 
-            results = await RunQuery(client, Queries.PullRequestQuery, "docs");
+            results = await RunQuery(client, GraphQLQueries.PullRequestQuery, "docs");
             Console.WriteLine(results);
         }
 
         static async Task IssuesThenPRsQuery(GitHubClient client)
         {
-            var docsIssueTask =  RunQuery(client, Queries.IssueQuery, "docs");
+            var docsIssueTask = RunQuery(client, GraphQLQueries.IssueQuery, "docs");
 
-            var apidocsIssueTask = RunQuery(client, Queries.IssueQuery, "dotnet-api-docs");
+            var apidocsIssueTask = RunQuery(client, GraphQLQueries.IssueQuery, "dotnet-api-docs");
 
             // Find PRs:
-            var samplesPRTask = RunQuery(client, Queries.PullRequestQuery, "samples");
-            var apiDocsPRTask = RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs");
-            var docsPRTask = RunQuery(client, Queries.PullRequestQuery, "docs");
+            var samplesPRTask = RunQuery(client, GraphQLQueries.PullRequestQuery, "samples");
+            var apiDocsPRTask = RunQuery(client, GraphQLQueries.PullRequestQuery, "dotnet-api-docs");
+            var docsPRTask = RunQuery(client, GraphQLQueries.PullRequestQuery, "docs");
 
             writeData(await docsIssueTask);
             writeData(await apidocsIssueTask);
@@ -150,11 +150,11 @@ namespace GitHubActivityReport
         {
             List<Task<JObject>> queryTasks = new List<Task<JObject>>
             {
-                RunQuery(client, Queries.IssueQuery, "docs"),
-                RunQuery(client, Queries.IssueQuery, "dotnet-api-docs"),
-                RunQuery(client, Queries.PullRequestQuery, "samples"),
-                RunQuery(client, Queries.PullRequestQuery, "dotnet-api-docs"),
-                RunQuery(client, Queries.PullRequestQuery, "docs")
+                RunQuery(client, GraphQLQueries.IssueQuery, "docs"),
+                RunQuery(client, GraphQLQueries.IssueQuery, "dotnet-api-docs"),
+                RunQuery(client, GraphQLQueries.PullRequestQuery, "samples"),
+                RunQuery(client, GraphQLQueries.PullRequestQuery, "dotnet-api-docs"),
+                RunQuery(client, GraphQLQueries.PullRequestQuery, "docs")
             };
 
             while (queryTasks.Any())
