@@ -96,7 +96,7 @@ namespace GitHubActivityReport
 
             try
             {
-                var results = await runPagedQuery(client, Queries.PagedIssueQuery, "docs");
+                var results = await RunPagedQuery(client, GraphQLQueries.PagedIssueQuery, "docs");
                 Console.WriteLine(results);
             }
             catch (OperationCanceledException)
