@@ -1,21 +1,24 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GitHubActivityReport
 {
-    public class GraphQLRequest
+    class GraphQLRequest
     {
+        [JsonProperty("query")]
         public string Query { get; set; }
+
+        [JsonProperty("variables")]
         public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
     }
 
-    class Queries
+    static class Queries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
@@ -89,7 +92,7 @@ namespace GitHubActivityReport
             // 3. Do the same for PRs in: dotnet/docs, dotnet/dotnet-api-docs, dotnet/samples
         }
 
-        private static string GetEnvVariable(string item, string error, string defaultValue)
+        static string GetEnvVariable(string item, string error, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(item);
             if (string.IsNullOrWhiteSpace(value))

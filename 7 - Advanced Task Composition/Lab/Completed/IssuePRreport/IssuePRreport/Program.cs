@@ -11,14 +11,17 @@ namespace GitHubActivityReport
 {
     class GraphQLRequest
     {
+        [JsonProperty("query")]
         public string Query { get; set; }
+
+        [JsonProperty("variables")]
         public IDictionary<string, object> Variables { get; } = new Dictionary<string, object>();
 
         public string ToJsonText() =>
             JsonConvert.SerializeObject(this);
     }
 
-    class GraphQLQueries
+    static class GraphQLQueries
     {
         internal const string IssueQuery =
 @"query ($repo_name: String!) {
