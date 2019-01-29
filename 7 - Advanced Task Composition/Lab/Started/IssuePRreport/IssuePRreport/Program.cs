@@ -74,6 +74,7 @@ namespace GitHubActivityReport
     {
         static async Task Main(string[] args)
         {
+            //Follow these steps to create a GitHub Access Token https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token           
             var key = GetEnvVariable("GitHubKey",
             "You must store you GitHub key in the 'GitHubKey' environment variable",
             "");
@@ -256,7 +257,6 @@ namespace GitHubActivityReport
 
         static string GetEnvVariable(string item, string error, string defaultValue)
         {
-            //Follow these steps to create a GitHub Access Token https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token
             var value = Environment.GetEnvironmentVariable(item);
 
             if (string.IsNullOrWhiteSpace(value))
