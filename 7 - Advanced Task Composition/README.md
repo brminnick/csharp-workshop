@@ -5,9 +5,9 @@
 The first lab did nothing with errors. Let's fix that in two ways:
 
 1. Validate args and state with a synchronous Task-returning method.
-1. Report errors correctly with proper await  or processing async errors.
+1. Report errors correctly with proper await or processing async errors.
 
-THat means adding the API errors collection to the returned data.
+That means adding the API errors collection to the returned data.
 Throw when that data comes back bad. Each error has a message, locations array.
 
 ## Interface / API critique
